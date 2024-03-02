@@ -8,13 +8,16 @@ import os
 
 
 class FileHandler:
+    """
+    This class can handle file and directory errors
+    """
     def __init__(self, path):
         self.path = path
 
     def check_directory(self):
         """Checks if the directory exists."""
         if not os.path.exists(self.path):
-            raise FileNotFoundError(self.path)
+            return False
         else:
             return True
 

@@ -6,6 +6,9 @@ This Module contains functions to deal with data and strings
 
 
 def split_and_validate_extensions(extensions_string):
+    """
+    function to deal with extensions string
+    """
     extensions = extensions_string.strip().split(",")
     valid_extensions = []
     for extension in extensions:
