@@ -1,3 +1,7 @@
+"""
+Sample script for testing the functionality of the tools container
+"""
+
 from Tools.file_handler import FileHandler
 from Tools.data_handler import split_and_validate_extensions
 
