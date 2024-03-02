@@ -1,3 +1,9 @@
+"""
+Created on 02 Mar 2024
+@author: Harish NG
+This module contains functions to handle file and directory errors
+"""
+
 import os
 
 
@@ -25,10 +31,10 @@ class FileHandler:
 
     def has_data(self, file_path):
         """Checks if the file has data (non-zero size)."""
-        return os.path.exists(os.path.join(self.path, file_path)) and os.path.getsize(os.path.join(self.path, file_path)) > 0
+        return (os.path.exists(os.path.join(self.path, file_path))
+                and os.path.getsize(os.path.join(self.path, file_path)) > 0)
 
     def data_check(self, extensions):
         """Checks if all files with the specified extensions have data."""
         files_in_dir = self.find_files_with_extensions(extensions)
         return all(self.has_data(file) for file in files_in_dir)
-
