@@ -11,12 +11,13 @@ class FileHandler:
     """
     This class can handle file and directory errors
     """
+
     def __init__(self, path):
         self.path = path
 
     def check_directory(self):
         """Checks if the directory exists."""
-        if not os.path.exists(self.path):
+        if not os.path.exists(self.path):  # pylint: disable=R1705
             return False
         else:
             return True
