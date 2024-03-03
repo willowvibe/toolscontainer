@@ -2,15 +2,15 @@
 Sample script for testing the functionality of the tools container
 """
 
-from Tools.file_handler import FileHandler
-from Tools.data_handler import split_and_validate_extensions
+# pylint: disable=E0401
+from support_modules import file_handler, data_handler
 
 path = input("Enter the Path of the file to be checked: ")
 file_type = input("Enter the file type of the file to be checked: ")
-file_type = split_and_validate_extensions(file_type)
+file_type = data_handler.split_and_validate_extensions(file_type)
 
 try:
-    fh = FileHandler(path)
+    fh = file_handler.FileHandler(path)
     files_ext = fh.find_files_with_extensions(file_type)
     if fh.check_directory() and files_ext:
         print("Given Directory exits\n")
