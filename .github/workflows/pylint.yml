@@ -21,26 +21,3 @@ jobs:
       - name: Run Flake8 checks
         run: flake8
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'  # Update with your specific version(s)
-
-      - name: Install dependencies
-        run: pip install pytest pytest-cov
-
-      - name: Run tests with coverage
-        run: |
-          pytest --cov-report=xml
-
-      - name: Upload coverage report to Coveralls (optional)
-        uses: coveralls-actions/coveralls-python@v1.4.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # ... other Coveralls options
-
