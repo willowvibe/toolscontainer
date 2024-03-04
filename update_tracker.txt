@@ -1,0 +1,15 @@
+currently implemented
+- file handler which check for directory and files exist and check given extension files are not empty
+- data handler fetches extension of the given files
+
+
+
+
+
+
+
+
+Planned
+- .py module file to implement the image compression in batch
+- find issues with directory read and save issues w.r.t batch process
+- launch a Flask web app to implement the compress module
