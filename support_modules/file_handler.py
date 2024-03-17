@@ -5,6 +5,7 @@ This module contains functions to handle file and directory errors
 """
 
 import os
+from typing import List
 
 
 class FileHandler:
@@ -22,9 +23,10 @@ class FileHandler:
         else:
             return True
 
-    def find_files_with_extensions(self, extensions):
+    def find_files_with_extensions(self, extensions: List[str]) -> List[str]:
         """Finds files with the specified extensions in the directory."""
-        self.check_directory()  # Ensure directory exists before proceeding
+        if not self.check_directory():
+            return []
         files_with_extensions = []
         for file in os.listdir(self.path):
             if any(file.endswith(ext) for ext in extensions):
@@ -33,12 +35,12 @@ class FileHandler:
                     files_with_extensions.append(filepath)
         return files_with_extensions
 
-    def has_data(self, file_path):
+    def has_data(self, file_path: str) -> bool:
         """Checks if the file has data (non-zero size)."""
         return (os.path.exists(os.path.join(self.path, file_path))
                 and os.path.getsize(os.path.join(self.path, file_path)) > 0)
 
-    def data_check(self, extensions):
+    def data_check(self, extensions: List[str]) -> bool:
         """Checks if all files with the specified extensions have data."""
         files_in_dir = self.find_files_with_extensions(extensions)
         return all(self.has_data(file) for file in files_in_dir)
