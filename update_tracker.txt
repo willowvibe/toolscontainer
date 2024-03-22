@@ -2,7 +2,9 @@ currently implemented
 - file handler which check for directory and files exist and check given extension files are not empty
 - data handler fetches extension of the given files
 
-
+22/03/2024
+ - bulk video conversion script (functionality is not working because of ffmpeg binary fetch issue)
+ - supporting GUI implementation ( it is looking good we need above func to work to know)
 
 
 
