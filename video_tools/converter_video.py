@@ -3,27 +3,19 @@ import os
 
 
 def convert_videos(input_folder, output_folder, output_format=".mp4", callback=None):
-    """
-    Convert all video files in the input_folder to the specified output_format
-    and save them to the output_folder. A callback function can be provided
-    to receive progress updates.
-    """
-    # Ensure output folder exists
-    global clip
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # Supported video formats
     format_to_codec = {
-        ".mp4": "libx264",  # H.264 codec; widely supported, good for web videos
-        ".avi": "mpeg4",  # MPEG-4 codec; older format, widely compatible
-        ".mov": "libx264",  # H.264 codec; used in QuickTime
-        ".mkv": "libx264",  # H.264 codec; for Matroska container, supports modern features
-        ".flv": "flv",  # FLV codec; used in Flash Video
-        ".wmv": "wmv2",  # Windows Media Video codec; for Windows Media Video
-        ".webm": "libvpx-vp9",  # VP9 codec; for WebM container, good for web with smaller file sizes
-        ".ogv": "libtheora",  # Theora codec; for Ogg container
-        ".gif": "gif",  # GIF codec; for creating animated GIFs
+        ".mp4": "libx264",
+        ".avi": "mpeg4",
+        ".mov": "libx264",
+        ".mkv": "libx264",
+        ".flv": "flv",
+        ".wmv": "wmv2",
+        ".webm": "libvpx-vp9",
+        ".ogv": "libtheora",
+        ".gif": "gif",
     }
 
     supported_formats = list(format_to_codec.keys())
@@ -32,10 +24,17 @@ def convert_videos(input_folder, output_folder, output_format=".mp4", callback=N
     for index, file in enumerate(files):
         input_path = os.path.join(input_folder, file)
         output_path = os.path.join(output_folder, os.path.splitext(file)[0] + output_format)
-        codec = format_to_codec.get(output_format, "libx264")  # Default to "libx264" if not found
+        codec = format_to_codec.get(output_format, "libx264")
+
+        # Notify start of conversion
+        if callback:
+            callback(file, "start", index + 1, len(files))
+
         try:
             clip = VideoFileClip(input_path)
             clip.write_videofile(output_path, codec=codec, verbose=False, logger=None)
+
+            # Notify completion of conversion
             if callback:
                 callback(file, "done", index + 1, len(files))
         except Exception as e:
@@ -43,7 +42,7 @@ def convert_videos(input_folder, output_folder, output_format=".mp4", callback=N
             if callback:
                 callback(file, "failed", index + 1, len(files))
         finally:
-            if 'clip' in locals():
+            if 'clip' in locals() or 'clip' in globals():
                 clip.close()
 
 

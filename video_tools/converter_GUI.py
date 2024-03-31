@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import filedialog, scrolledtext
 import threading
 import os
+import time
 
 # Ensure you have a module named 'converter_video.py' with a function 'convert_videos' correctly defined.
 from converter_video import convert_videos
@@ -65,6 +66,11 @@ class VideoConverterGUI(ctk.CTk):
         # Progress bar
         self.progress_bar = ctk.CTkProgressBar(self.status_frame)
         self.progress_bar.pack(fill="x", padx=20, pady=(5, 20))
+        self.progress_percentage_label = ctk.CTkLabel(self.status_frame, text="0%")
+        self.progress_percentage_label.pack(side="left", padx=(20, 0))
+
+        self.time_taken_label = ctk.CTkLabel(self.status_frame, text="Time: 0s")
+        self.time_taken_label.pack(side="right", padx=(0, 20))
 
         # Converted files list
         self.converted_files_label = ctk.CTkLabel(self.status_frame, text="Conversion Log:")
@@ -96,7 +102,7 @@ class VideoConverterGUI(ctk.CTk):
             self.output_folder = folder
             self.output_folder_label.configure(text=f"Output: {os.path.basename(folder)}")
 
-    def update_progress(self, file, status, current_index=0, total_files=1):
+    def update_progress(self, file, status, current_index=0, total_files=1, time_taken=None):
         def update():
             if status == "start":
                 self.converted_files_box.configure(state='normal')
@@ -114,6 +120,21 @@ class VideoConverterGUI(ctk.CTk):
                 self.converted_files_box.yview_moveto(1)
                 self.converted_files_box.configure(state='disabled')
                 self.progress_bar.set(current_index / total_files)
+
+            self.converted_files_box.configure(state='normal')
+            self.converted_files_box.insert('end', message,
+                                            "red_clr" if status == "start" else "green_clr" if status == "done" else "blue_clr")
+            self.converted_files_box.yview_moveto(1)
+            self.converted_files_box.configure(state='disabled')
+
+            # Update progress bar and label
+            progress = current_index / total_files
+            self.progress_bar.set(progress)
+            self.progress_percentage_label.configure(text=f"{progress * 100:.2f}%")
+
+            # Update time taken label if conversion is completed
+            if time_taken is not None:
+                self.time_taken_label.configure(text=f"Time: {time_taken}s")
 
         self.after(0, update)
 
@@ -147,35 +168,29 @@ class VideoConverterGUI(ctk.CTk):
             supported_formats = ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm', '.ogv', '.gif']
             files = [f for f in os.listdir(self.input_folder) if os.path.splitext(f)[1].lower() in supported_formats]
             total_files = len(files)
+            if total_files == 0:
+                self.after(0, lambda: self.update_conversion_log("No supported files found for conversion.\n"))
+                self.after(0, lambda: self.convert_button.configure(state='normal'))
+                return
+
             current_index = 0
 
             # The callback function for updating the GUI with the conversion progress.
             def update_callback(file, status, current_index, total_files):
                 self.after(0, lambda: self.update_progress(file, status, current_index, total_files))
 
-            for file in os.listdir(self.input_folder):
-                if not file.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):
-                    continue
-                current_index += 1
-                self.update_progress(file, "start", current_index, total_files)
-
-                try:
-                    # Dynamic codec selection is handled within convert_videos
-                    convert_videos(self.input_folder, self.output_folder, selected_format, update_callback)
-
-                    # No need to update progress here as it's handled via callback
-                except Exception as e:
-                    print(f"Error converting {file}: {e}")
-                    self.after(0, lambda: self.update_progress(file, "failed", current_index, total_files))
+            try:
+                # Assuming convert_videos is designed to process all files in the input directory
+                # and correctly calls update_callback with four arguments
+                convert_videos(self.input_folder, self.output_folder, selected_format, update_callback)
+            except Exception as e:
+                print(f"Error during conversion: {e}")
+                self.after(0, lambda: self.update_conversion_log(f"Error during conversion: {e}\n"))
 
             self.after(0, lambda: self.convert_button.configure(state='normal'))
-            self.after(0, lambda: self.converted_files_box.configure(state='normal'))
-            self.after(0, lambda: self.converted_files_box.insert('end', "All conversions completed.\n"))
-            self.after(0, lambda: self.converted_files_box.configure(state='disabled'))
-            self.after(0, lambda: self.progress_bar.set(1.0))  # Set progress bar to 100% at the end
 
-        # Start the conversion process in a separate thread
-        conversion_thread = threading.Thread(target=conversion_process)
+        # Start the conversion process in a new thread to keep the GUI responsive
+        conversion_thread = threading.Thread(target=conversion_process, daemon=True)
         conversion_thread.start()
 
 
