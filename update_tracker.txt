@@ -1,8 +1,8 @@
 currently implemented
 - file handler which check for directory and files exist and check given extension files are not empty
 - data handler fetches extension of the given files
-
-
+- Video Converter(batch Files) with GUI and CLI support.
+- executable for the video_converter is available.
 
 
 
@@ -10,6 +10,8 @@ currently implemented
 
 
 Planned
+- Better GUI for all Tools
+- Better Version control to send updates remotely
 - .py module file to implement the image compression in batch
 - find issues with directory read and save issues w.r.t batch process
 - launch a Flask web app to implement the compress module
